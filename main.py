@@ -1,7 +1,7 @@
 import sys
 import numpy as np
 from PySide6.QtWidgets import QApplication, QDialog, QFileDialog, QWidget, QVBoxLayout, QLabel, QTableWidgetItem
-from PySide6.QtCore import QThread, Signal
+from PySide6.QtCore import QThread, Signal, QTimer
 from ui import numain, nuaction, nuselect, nuresult, nutt, nucv, nupd
 
 from model import Model
@@ -330,6 +330,8 @@ class PredictWindow(QDialog):
         text = self.ui.textEdit.toPlainText()
         probabilities = self.model.predict(text)
         prediction = str(np.where(probabilities < 0.5, 'Human Answer','ChatGPT Answer').flat[0])
+        self.ui.predictionView.setStyleSheet("background-color: rgb(47, 255, 10)")
+        QTimer.singleShot(50, lambda :self.ui.predictionView.setStyleSheet("background-color: rgb(255, 255, 255)") )
         self.ui.predictionView.setText(prediction)
     
     def show_model_summary(self):
