@@ -5,6 +5,8 @@ import tensorflow as tf
 from tensorflow import keras
 from keras import layers, metrics
 from keras.layers import TextVectorization, Embedding
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
 import preprocessing
 from dataset import Dataset
@@ -29,7 +31,6 @@ class Model:
             convs.append(x)
         if len(convs) > 1:
             x = tf.keras.layers.Concatenate(axis=-1)(convs)
-        # x = layers.Dense(128, activation="relu")(x)
         x = layers.Dropout(dropout)(x)
         preds = layers.Dense(1, activation="sigmoid")(x)
         model = keras.Model(string_sequences_input, preds)
@@ -54,50 +55,53 @@ class Model:
     def summary(self, print_fn):
         self.model.summary(print_fn=print_fn)
 
-    def kfold(self, dataset:Dataset, batch_size:int, epochs:int):
+    def kfold(self, dataset:Dataset, batch_size:int, epochs:int, callbacks=None):
         n_folds = 10
-        dataset.apply(preprocessing.remove_punctuation)
-        dataset.apply(preprocessing.lowercase)
-
+        cm = [[0, 0], [0, 0]]
         accuracies = []
         precisions = []
         recalls = []
-        for test_data, train_data in dataset.kfold(n_folds):
-            test_data = test_data.make_xy()
-            train_data = train_data.make_xy(batch_size)
-            self.model.fit(train_data, epochs=epochs)
-            metrics = self.model.evaluate(test_data)
+        fscores = []
+        for i, (test_data, train_data) in enumerate(dataset.kfold(n_folds)):
+            self.train(dataset=train_data, batch_size=batch_size, epochs=epochs, callbacks=callbacks)
+            metrics = self.test(test_data)
+            cm[0][0] += metrics[0][0][0]
+            cm[0][1] += metrics[0][0][1]
+            cm[1][0] += metrics[0][1][0]
+            cm[1][1] += metrics[0][1][1]
             accuracies.append(metrics[1])
             precisions.append(metrics[2])
             recalls.append(metrics[3])
+            fscores.append(metrics[4])
             self._reinitialize_model()
 
-        f1_scores = [2 * (precisions[i] * recalls[i]) / (precisions[i] + recalls[i]) for i in range(n_folds)]
-
         mean_accuracy = statistics.fmean(accuracies)
-        mean_precisions = statistics.fmean(precisions)
-        mean_recalls = statistics.fmean(recalls)
-        mean_f1 = statistics.fmean(f1_scores)
-        return mean_accuracy, mean_precisions, mean_recalls, mean_f1
+        mean_precision = statistics.fmean(precisions)
+        mean_recall = statistics.fmean(recalls)
+        mean_fscore = statistics.fmean(fscores)
+        return cm, mean_accuracy, mean_precision, mean_recall, mean_fscore
 
-    def train(self, dataset:Dataset, batch_size:int, epochs:int):
+    def train(self, dataset:Dataset, batch_size:int, epochs:int, callbacks=None):
         dataset.apply(preprocessing.remove_punctuation)
         dataset.apply(preprocessing.lowercase)
         dataset = dataset.make_xy(batch_size)
-        self.model.fit(dataset, batch_size=batch_size, epochs=epochs)
+        self.model.fit(dataset, batch_size=batch_size, epochs=epochs, callbacks=callbacks)
 
     def test(self, dataset:Dataset):
         dataset.apply(preprocessing.remove_punctuation)
         dataset.apply(preprocessing.lowercase)
-        dataset = dataset.make_xy()
-        metrics = self.model.evaluate(dataset)
 
-        accuracy = metrics[1]
-        precision = metrics[2]
-        recall = metrics[3]
-        f1_score = 2 * (precision * recall) / (precision + recall)
+        predictions = self.model.predict(dataset.make_xy())
+        predictions = np.where(predictions < 0.5, 0 , 1)
+        labels = dataset.get_labels()
+        cm = confusion_matrix(labels, predictions)
+        print('Confusion matrix:\n', cm)
+        accuracy = accuracy_score(labels, predictions)
+        precision = precision_score(labels, predictions, average='weighted', zero_division=0)
+        recall = recall_score(labels, predictions, average='weighted', zero_division=0)
+        fscore = f1_score(labels, predictions, average='weighted', zero_division=0)
 
-        return accuracy, precision, recall, f1_score
+        return cm, accuracy, precision, recall, fscore
 
     def predict(self, text:str):
         text = preprocessing.remove_punctuation(text)

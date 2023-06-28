@@ -16,34 +16,18 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QFrame, QGridLayout, QHBoxLayout,
-    QLabel, QProgressBar, QPushButton, QSizePolicy,
-    QSpinBox, QTextEdit, QVBoxLayout, QWidget)
+    QLabel, QPushButton, QSizePolicy, QSpinBox,
+    QTextEdit, QVBoxLayout, QWidget)
 
 class Ui_Form(object):
     def setupUi(self, Form):
         if not Form.objectName():
             Form.setObjectName(u"Form")
-        Form.resize(357, 181)
+        Form.resize(357, 151)
         self.gridLayout = QGridLayout(Form)
         self.gridLayout.setObjectName(u"gridLayout")
-        self.progressBar = QProgressBar(Form)
-        self.progressBar.setObjectName(u"progressBar")
-        self.progressBar.setEnabled(True)
-        self.progressBar.setMaximumSize(QSize(16777215, 16777215))
-        self.progressBar.setValue(0)
-        self.progressBar.setTextVisible(False)
-
-        self.gridLayout.addWidget(self.progressBar, 0, 0, 1, 1)
-
         self.verticalLayout = QVBoxLayout()
         self.verticalLayout.setObjectName(u"verticalLayout")
-        self.line_2 = QFrame(Form)
-        self.line_2.setObjectName(u"line_2")
-        self.line_2.setFrameShape(QFrame.HLine)
-        self.line_2.setFrameShadow(QFrame.Sunken)
-
-        self.verticalLayout.addWidget(self.line_2)
-
         self.datasetView = QTextEdit(Form)
         self.datasetView.setObjectName(u"datasetView")
         self.datasetView.setEnabled(False)

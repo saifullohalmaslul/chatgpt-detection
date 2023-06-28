@@ -16,14 +16,14 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QFrame, QGridLayout, QHBoxLayout,
-    QLabel, QProgressBar, QPushButton, QSizePolicy,
-    QSpinBox, QTextEdit, QVBoxLayout, QWidget)
+    QLabel, QPushButton, QSizePolicy, QSpinBox,
+    QTextEdit, QVBoxLayout, QWidget)
 
 class Ui_Form(object):
     def setupUi(self, Form):
         if not Form.objectName():
             Form.setObjectName(u"Form")
-        Form.resize(359, 241)
+        Form.resize(359, 218)
         self.gridLayout = QGridLayout(Form)
         self.gridLayout.setObjectName(u"gridLayout")
         self.horizontalLayout = QHBoxLayout()
@@ -60,24 +60,8 @@ class Ui_Form(object):
 
         self.gridLayout.addLayout(self.horizontalLayout_2, 4, 0, 1, 1)
 
-        self.progressBar = QProgressBar(Form)
-        self.progressBar.setObjectName(u"progressBar")
-        self.progressBar.setEnabled(True)
-        self.progressBar.setMaximumSize(QSize(16777215, 16777215))
-        self.progressBar.setValue(0)
-        self.progressBar.setTextVisible(False)
-
-        self.gridLayout.addWidget(self.progressBar, 0, 0, 1, 1)
-
         self.verticalLayout = QVBoxLayout()
         self.verticalLayout.setObjectName(u"verticalLayout")
-        self.line_3 = QFrame(Form)
-        self.line_3.setObjectName(u"line_3")
-        self.line_3.setFrameShape(QFrame.HLine)
-        self.line_3.setFrameShadow(QFrame.Sunken)
-
-        self.verticalLayout.addWidget(self.line_3)
-
         self.trainDatasetView = QTextEdit(Form)
         self.trainDatasetView.setObjectName(u"trainDatasetView")
         self.trainDatasetView.setEnabled(False)

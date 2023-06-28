@@ -111,6 +111,7 @@ class DatasetSelectionWindow(QWidget):
 
         self.ui.loadDatasetButton.clicked.connect(self.add_dataset)
         self.ui.selectDatasetButton.clicked.connect(self.select_dataset)
+        self.ui.saveDatasetButton.clicked.connect(self.save_dataset)
         self.ui.splitButton.clicked.connect(self.split_dataset)
         self.select.connect(slot)
 
@@ -127,9 +128,19 @@ class DatasetSelectionWindow(QWidget):
         self.caller.dataset_selection_window.close()
         del self.caller.dataset_selection_window
         self.select.emit(dataset)
+    
+    def save_dataset(self):
+        dataset = dataset_selections.datasets[self.ui.tableWidget.currentRow()]
+        path, _ = QFileDialog.getSaveFileName(self, "Save Dataset As", dataset.name, "JSON files (*.json *.jsonl)")
+        
+        if path:
+            name = path.split('/')[-1]
+            dataset.save(path)
+            dataset.name = name
+            self.refresh_table()
 
     def add_dataset(self):
-        dataset_path = QFileDialog.getOpenFileName(self, "Select Dataset File", "", "JSON files (*.json *.jsonl)")[0]
+        dataset_path, _ = QFileDialog.getOpenFileName(self, "Select Dataset File", "", "JSON files (*.json *.jsonl)")
         dataset_selections.datasets.append(Dataset.from_json(dataset_path))
         self.refresh_table()
     
@@ -161,10 +172,16 @@ class ResultWindow(QDialog):
         self.model = model
         self.ui.backButton.clicked.connect(self.show_model_summary)
 
-        accuracy = f'{result[0] * 100:.2f}%'
-        precision = f'{result[1] * 100:.2f}%'
-        recall = f'{result[2] * 100:.2f}%'
-        fscore = f'{result[3] * 100:.2f}%'
+        cm = result[0]
+        self.ui.confusionTable.setItem(0, 0, QTableWidgetItem(str(cm[0][0])))
+        self.ui.confusionTable.setItem(0, 1, QTableWidgetItem(str(cm[0][1])))
+        self.ui.confusionTable.setItem(1, 0, QTableWidgetItem(str(cm[1][0])))
+        self.ui.confusionTable.setItem(1, 1, QTableWidgetItem(str(cm[1][1])))
+
+        accuracy = f'{result[1] * 100:.2f}%'
+        precision = f'{result[2] * 100:.2f}%'
+        recall = f'{result[3] * 100:.2f}%'
+        fscore = f'{result[4] * 100:.2f}%'
 
         self.ui.accuracyText.setText(accuracy)
         self.ui.precisionText.setText(precision)
@@ -407,7 +424,7 @@ class ModelConfigWindow(QDialog):
         self.ui.corpusTextView.setEnabled(True)
 
     def get_embeddings_path(self):
-        self.embeddings_path = QFileDialog.getOpenFileName(self, "Select Embeddings File", "", "Text files (*.txt)")[0]
+        self.embeddings_path, _ = QFileDialog.getOpenFileName(self, "Select Embeddings File", "", "Text files (*.txt)")
         embeddings_name = self.embeddings_path.split('/')[-1]
         self.ui.embeddingsTextView.setText(embeddings_name)
         self.ui.embeddingsTextView.setEnabled(True)
