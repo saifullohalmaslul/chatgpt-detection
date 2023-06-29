@@ -1,11 +1,11 @@
 import sys
 import numpy as np
-from PySide6.QtWidgets import QApplication, QDialog, QFileDialog, QWidget, QVBoxLayout, QLabel, QTableWidgetItem
+from PySide6.QtWidgets import QApplication, QDialog, QFileDialog, QWidget, QTableWidgetItem
 from PySide6.QtCore import QThread, Signal, QTimer
 from ui import numain, nuaction, nuselect, nuresult, nutt, nucv, nupd
 
 from model import Model
-from dataset import Dataset
+from dataset import Dataset, DatasetSelection
 
 class CompilingThread(QThread):
     finished = Signal(Model)
@@ -485,20 +485,6 @@ class ModelConfigWindow(QDialog):
             self.summary_window = ModelSummaryWindow(model)
             self.summary_window.show()
             self.close()
-
-class DatasetSelection():
-    def __init__(self):
-        self.datasets:list[Dataset] = []
-
-    def split(self, index:int, ratio:float):
-        d1, d2 = self.datasets[index].split(ratio)
-        self.datasets[index] = d1
-
-        self.datasets.append(None)
-        for i in reversed(range(index+1, len(self.datasets)-1)):
-            self.datasets[i+1] = self.datasets[i]
-        
-        self.datasets[index+1] = d2
 
 def main():
     app = QApplication(sys.argv)

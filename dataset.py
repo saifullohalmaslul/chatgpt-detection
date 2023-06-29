@@ -4,6 +4,20 @@ import tensorflow as tf
 
 import constants
 
+class DatasetSelection():
+    def __init__(self):
+        self.datasets:list[Dataset] = []
+
+    def split(self, index:int, ratio:float):
+        d1, d2 = self.datasets[index].split(ratio)
+        self.datasets[index] = d1
+
+        self.datasets.append(None)
+        for i in reversed(range(index+1, len(self.datasets)-1)):
+            self.datasets[i+1] = self.datasets[i]
+        
+        self.datasets[index+1] = d2
+
 class Dataset:
     def __init__(self, data:list, shuffle=True, name:str=""):
         self.name = name
