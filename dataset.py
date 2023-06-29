@@ -26,7 +26,7 @@ class Dataset:
         self.data = data
 
     @classmethod
-    def from_json(cls, path:str, balancing=True, name:str=""):
+    def from_json(cls, path:str, balancing=False, name:str=""):
         data = []
         with open(path, mode='r', encoding='utf8') as json_file:
             for line in json_file:
