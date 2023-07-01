@@ -16,8 +16,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QFrame, QGridLayout, QHBoxLayout,
-    QLabel, QPushButton, QSizePolicy, QSpinBox,
-    QTextEdit, QVBoxLayout, QWidget)
+    QLabel, QPushButton, QSizePolicy, QSpacerItem,
+    QSpinBox, QTextEdit, QVBoxLayout, QWidget)
 
 class Ui_Form(object):
     def setupUi(self, Form):
@@ -99,6 +99,20 @@ class Ui_Form(object):
 
         self.gridLayout.addWidget(self.line, 0, 1, 5, 1)
 
+        self.verticalLayout_2 = QVBoxLayout()
+        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.backButton = QPushButton(Form)
+        self.backButton.setObjectName(u"backButton")
+
+        self.verticalLayout_2.addWidget(self.backButton)
+
+        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+
+        self.verticalLayout_2.addItem(self.verticalSpacer)
+
+
+        self.gridLayout.addLayout(self.verticalLayout_2, 1, 2, 1, 1)
+
 
         self.retranslateUi(Form)
 
@@ -111,5 +125,6 @@ class Ui_Form(object):
         self.label.setText(QCoreApplication.translate("Form", u"batch_size", None))
         self.label_2.setText(QCoreApplication.translate("Form", u"epochs", None))
         self.pushButton.setText(QCoreApplication.translate("Form", u"Cross validate", None))
+        self.backButton.setText(QCoreApplication.translate("Form", u"<< Back", None))
     # retranslateUi
 

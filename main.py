@@ -124,13 +124,13 @@ class DatasetSelectionWindow(QWidget):
         caller.dataset_selection_window.show()
     
     def select_dataset(self):
-        dataset = dataset_selections.datasets[self.ui.tableWidget.currentRow()]
+        dataset = dataset_selections.get(self.ui.tableWidget.currentRow())
         self.caller.dataset_selection_window.close()
         del self.caller.dataset_selection_window
         self.select.emit(dataset)
     
     def save_dataset(self):
-        dataset = dataset_selections.datasets[self.ui.tableWidget.currentRow()]
+        dataset = dataset_selections.get(self.ui.tableWidget.currentRow())
         path, _ = QFileDialog.getSaveFileName(self, "Save Dataset As", dataset.name, "JSON files (*.json *.jsonl)")
         
         if path:
@@ -141,7 +141,7 @@ class DatasetSelectionWindow(QWidget):
 
     def add_dataset(self):
         dataset_path, _ = QFileDialog.getOpenFileName(self, "Select Dataset File", "", "JSON files (*.json *.jsonl)")
-        dataset_selections.datasets.append(Dataset.from_json(dataset_path))
+        dataset_selections.add(dataset_path)
         self.refresh_table()
     
     def split_dataset(self):
@@ -206,6 +206,7 @@ class TrainTestWindow(QDialog):
         self.ui.trainSelectButton.clicked.connect(lambda: DatasetSelectionWindow.get_dataset(self, self.load_train_data))
         self.ui.testSelectButton.clicked.connect(lambda: DatasetSelectionWindow.get_dataset(self, self.load_test_data))
         self.ui.pushButton.clicked.connect(self.start_train_test)
+        self.ui.backButton.clicked.connect(self.show_model_summary)
 
     def start_train_test(self):
         self.train_test_thread = TrainTestThread(
@@ -236,6 +237,7 @@ class TrainTestWindow(QDialog):
         self.ui.batchSpinBox.setDisabled(True)
         self.ui.epochsSpinBox.setDisabled(True)
         self.ui.pushButton.setDisabled(True)
+        self.ui.backButton.setDisabled(True)
     
     def enable_inputs(self):
         self.ui.trainDatasetView.setEnabled(True)
@@ -245,6 +247,7 @@ class TrainTestWindow(QDialog):
         self.ui.batchSpinBox.setEnabled(True)
         self.ui.epochsSpinBox.setEnabled(True)
         self.ui.pushButton.setEnabled(True)
+        self.ui.backButton.setEnabled(True)
     
     def load_train_data(self, dataset:Dataset):
         self.train_data = dataset
@@ -263,6 +266,11 @@ class TrainTestWindow(QDialog):
         self.test_loaded = True
         if self.train_loaded and self.test_loaded:
             self.ui.pushButton.setEnabled(True)
+    
+    def show_model_summary(self):
+        self.summary_window = ModelSummaryWindow(self.model)
+        self.summary_window.show()
+        self.close()
 
 class CrossValidationWindow(QDialog):
     def __init__(self, model:Model):
@@ -271,6 +279,7 @@ class CrossValidationWindow(QDialog):
         self.ui.setupUi(self)
         self.ui.datasetSelectButton.clicked.connect(lambda: DatasetSelectionWindow.get_dataset(self, self.load_dataset))
         self.ui.pushButton.clicked.connect(self.start_cross_validation)
+        self.ui.backButton.clicked.connect(self.show_model_summary)
 
         self.model = model
     
@@ -280,6 +289,11 @@ class CrossValidationWindow(QDialog):
         self.ui.datasetView.setEnabled(True)
 
         self.ui.pushButton.setEnabled(True)
+    
+    def show_model_summary(self):
+        self.summary_window = ModelSummaryWindow(self.model)
+        self.summary_window.show()
+        self.close()
     
     def start_cross_validation(self):
         self.cross_validation_thread = CrossValidationThread(
@@ -307,6 +321,7 @@ class CrossValidationWindow(QDialog):
         self.ui.batchSpinBox.setDisabled(True)
         self.ui.epochsSpinBox.setDisabled(True)
         self.ui.pushButton.setDisabled(True)
+        self.ui.backButton.setDisabled(True)
     
     def enable_inputs(self):
         self.ui.datasetView.setEnabled(True)
@@ -314,6 +329,7 @@ class CrossValidationWindow(QDialog):
         self.ui.batchSpinBox.setEnabled(True)
         self.ui.epochsSpinBox.setEnabled(True)
         self.ui.pushButton.setEnabled(True)
+        self.ui.backButton.setEnabled(True)
 
 class PredictWindow(QDialog):
     def __init__(self, model:Model):
@@ -356,6 +372,7 @@ class ModelSummaryWindow(QDialog):
         self.ui.trainTestButton.clicked.connect(self.show_train_test)
         self.ui.crossValButton.clicked.connect(self.show_cross_validation)
         self.ui.predictButton.clicked.connect(self.show_predict)
+        self.ui.backButton.clicked.connect(self.show_model_config)
     
     def print_summary(self, line):
         self.summary_text += line + '\n'
@@ -385,6 +402,11 @@ class ModelSummaryWindow(QDialog):
         self.predict_window.show()
         self.close()
     
+    def show_model_config(self):
+        self.config_window = ModelConfigWindow()
+        self.config_window.show()
+        self.close()
+    
     def disable_inputs(self):
         self.ui.nameView.setDisabled(True)
         self.ui.saveButton.setDisabled(True)
@@ -392,6 +414,7 @@ class ModelSummaryWindow(QDialog):
         self.ui.trainTestButton.setDisabled(True)
         self.ui.crossValButton.setDisabled(True)
         self.ui.predictButton.setDisabled(True)
+        self.ui.backButton.setDisabled(True)
     
     def enable_inputs(self):
         self.ui.nameView.setText(self.model.name)
@@ -401,6 +424,7 @@ class ModelSummaryWindow(QDialog):
         self.ui.trainTestButton.setEnabled(True)
         self.ui.crossValButton.setEnabled(True)
         self.ui.predictButton.setEnabled(True)
+        self.ui.backButton.setEnabled(True)
 
 class ModelConfigWindow(QDialog):
     def __init__(self):
@@ -414,11 +438,11 @@ class ModelConfigWindow(QDialog):
 
     def load_model(self):
         model_path = QFileDialog.getExistingDirectory(self, "Select Model Directory", "")
-
-        self.loading_thread = LoadingModelThread(model_path)
-        self.loading_thread.finished.connect(self.show_model_summary)
-        self.loading_thread.start()
-        self.disable_inputs()
+        if model_path:
+            self.loading_thread = LoadingModelThread(model_path)
+            self.loading_thread.finished.connect(self.show_model_summary)
+            self.loading_thread.start()
+            self.disable_inputs()
 
     def load_corpus(self, corpus:Dataset):
         self.corpus = corpus
@@ -426,10 +450,12 @@ class ModelConfigWindow(QDialog):
         self.ui.corpusTextView.setEnabled(True)
 
     def get_embeddings_path(self):
-        self.embeddings_path, _ = QFileDialog.getOpenFileName(self, "Select Embeddings File", "", "Text files (*.txt)")
-        embeddings_name = self.embeddings_path.split('/')[-1]
-        self.ui.embeddingsTextView.setText(embeddings_name)
-        self.ui.embeddingsTextView.setEnabled(True)
+        embeddings_path, _ = QFileDialog.getOpenFileName(self, "Select Embeddings File", "", "Text files (*.txt)")
+        if embeddings_path:
+            self.embeddings_path = embeddings_path
+            embeddings_name = self.embeddings_path.split('/')[-1]
+            self.ui.embeddingsTextView.setText(embeddings_name)
+            self.ui.embeddingsTextView.setEnabled(True)
     
     def get_kernel_sizes(self):
         kernel_sizes_text = self.ui.kernelSizeTextInput.toPlainText()

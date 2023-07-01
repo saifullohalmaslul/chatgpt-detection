@@ -16,8 +16,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QFrame, QGridLayout, QHBoxLayout,
-    QLabel, QPushButton, QSizePolicy, QSpinBox,
-    QTextEdit, QVBoxLayout, QWidget)
+    QLabel, QPushButton, QSizePolicy, QSpacerItem,
+    QSpinBox, QTextEdit, QVBoxLayout, QWidget)
 
 class Ui_Form(object):
     def setupUi(self, Form):
@@ -26,40 +26,6 @@ class Ui_Form(object):
         Form.resize(359, 218)
         self.gridLayout = QGridLayout(Form)
         self.gridLayout.setObjectName(u"gridLayout")
-        self.horizontalLayout = QHBoxLayout()
-        self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.label_2 = QLabel(Form)
-        self.label_2.setObjectName(u"label_2")
-
-        self.horizontalLayout.addWidget(self.label_2)
-
-        self.epochsSpinBox = QSpinBox(Form)
-        self.epochsSpinBox.setObjectName(u"epochsSpinBox")
-        self.epochsSpinBox.setMinimum(1)
-        self.epochsSpinBox.setMaximum(999)
-
-        self.horizontalLayout.addWidget(self.epochsSpinBox)
-
-
-        self.gridLayout.addLayout(self.horizontalLayout, 5, 0, 1, 1)
-
-        self.horizontalLayout_2 = QHBoxLayout()
-        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
-        self.label = QLabel(Form)
-        self.label.setObjectName(u"label")
-
-        self.horizontalLayout_2.addWidget(self.label)
-
-        self.batchSpinBox = QSpinBox(Form)
-        self.batchSpinBox.setObjectName(u"batchSpinBox")
-        self.batchSpinBox.setMinimum(1)
-        self.batchSpinBox.setMaximum(99999)
-
-        self.horizontalLayout_2.addWidget(self.batchSpinBox)
-
-
-        self.gridLayout.addLayout(self.horizontalLayout_2, 4, 0, 1, 1)
-
         self.verticalLayout = QVBoxLayout()
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.trainDatasetView = QTextEdit(Form)
@@ -78,6 +44,53 @@ class Ui_Form(object):
 
 
         self.gridLayout.addLayout(self.verticalLayout, 1, 0, 1, 1)
+
+        self.horizontalLayout_2 = QHBoxLayout()
+        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+        self.label = QLabel(Form)
+        self.label.setObjectName(u"label")
+
+        self.horizontalLayout_2.addWidget(self.label)
+
+        self.batchSpinBox = QSpinBox(Form)
+        self.batchSpinBox.setObjectName(u"batchSpinBox")
+        self.batchSpinBox.setMinimum(1)
+        self.batchSpinBox.setMaximum(99999)
+
+        self.horizontalLayout_2.addWidget(self.batchSpinBox)
+
+
+        self.gridLayout.addLayout(self.horizontalLayout_2, 4, 0, 1, 1)
+
+        self.horizontalLayout = QHBoxLayout()
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.label_2 = QLabel(Form)
+        self.label_2.setObjectName(u"label_2")
+
+        self.horizontalLayout.addWidget(self.label_2)
+
+        self.epochsSpinBox = QSpinBox(Form)
+        self.epochsSpinBox.setObjectName(u"epochsSpinBox")
+        self.epochsSpinBox.setMinimum(1)
+        self.epochsSpinBox.setMaximum(999)
+
+        self.horizontalLayout.addWidget(self.epochsSpinBox)
+
+
+        self.gridLayout.addLayout(self.horizontalLayout, 5, 0, 1, 1)
+
+        self.line = QFrame(Form)
+        self.line.setObjectName(u"line")
+        self.line.setFrameShape(QFrame.VLine)
+        self.line.setFrameShadow(QFrame.Sunken)
+
+        self.gridLayout.addWidget(self.line, 0, 1, 6, 1)
+
+        self.pushButton = QPushButton(Form)
+        self.pushButton.setObjectName(u"pushButton")
+        self.pushButton.setEnabled(False)
+
+        self.gridLayout.addWidget(self.pushButton, 5, 2, 1, 1)
 
         self.verticalLayout_2 = QVBoxLayout()
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
@@ -98,25 +111,26 @@ class Ui_Form(object):
 
         self.gridLayout.addLayout(self.verticalLayout_2, 2, 0, 1, 1)
 
-        self.pushButton = QPushButton(Form)
-        self.pushButton.setObjectName(u"pushButton")
-        self.pushButton.setEnabled(False)
-
-        self.gridLayout.addWidget(self.pushButton, 5, 2, 1, 1)
-
-        self.line = QFrame(Form)
-        self.line.setObjectName(u"line")
-        self.line.setFrameShape(QFrame.VLine)
-        self.line.setFrameShadow(QFrame.Sunken)
-
-        self.gridLayout.addWidget(self.line, 0, 1, 6, 1)
-
         self.line_2 = QFrame(Form)
         self.line_2.setObjectName(u"line_2")
         self.line_2.setFrameShape(QFrame.HLine)
         self.line_2.setFrameShadow(QFrame.Sunken)
 
         self.gridLayout.addWidget(self.line_2, 3, 0, 1, 1)
+
+        self.verticalLayout_3 = QVBoxLayout()
+        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
+        self.backButton = QPushButton(Form)
+        self.backButton.setObjectName(u"backButton")
+
+        self.verticalLayout_3.addWidget(self.backButton)
+
+        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+
+        self.verticalLayout_3.addItem(self.verticalSpacer)
+
+
+        self.gridLayout.addLayout(self.verticalLayout_3, 1, 2, 1, 1)
 
 
         self.retranslateUi(Form)
@@ -126,10 +140,11 @@ class Ui_Form(object):
 
     def retranslateUi(self, Form):
         Form.setWindowTitle(QCoreApplication.translate("Form", u"Train/Test", None))
-        self.label_2.setText(QCoreApplication.translate("Form", u"epochs", None))
-        self.label.setText(QCoreApplication.translate("Form", u"batch_size", None))
         self.trainSelectButton.setText(QCoreApplication.translate("Form", u"Select Train Dataset", None))
-        self.testSelectButton.setText(QCoreApplication.translate("Form", u"Select Test Dataset", None))
+        self.label.setText(QCoreApplication.translate("Form", u"batch_size", None))
+        self.label_2.setText(QCoreApplication.translate("Form", u"epochs", None))
         self.pushButton.setText(QCoreApplication.translate("Form", u"Train-Test", None))
+        self.testSelectButton.setText(QCoreApplication.translate("Form", u"Select Test Dataset", None))
+        self.backButton.setText(QCoreApplication.translate("Form", u"<< Back", None))
     # retranslateUi
 

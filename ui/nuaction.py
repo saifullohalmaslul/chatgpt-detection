@@ -53,6 +53,11 @@ class Ui_Form(object):
 
         self.horizontalLayout.addItem(self.horizontalSpacer)
 
+        self.backButton = QPushButton(Form)
+        self.backButton.setObjectName(u"backButton")
+
+        self.horizontalLayout.addWidget(self.backButton)
+
 
         self.verticalLayout_3.addLayout(self.horizontalLayout)
 
@@ -108,6 +113,7 @@ class Ui_Form(object):
     def retranslateUi(self, Form):
         Form.setWindowTitle(QCoreApplication.translate("Form", u"Model Summary - Select Action", None))
         self.saveButton.setText(QCoreApplication.translate("Form", u"Save Model..", None))
+        self.backButton.setText(QCoreApplication.translate("Form", u"Back to Model Config", None))
         self.trainTestButton.setText(QCoreApplication.translate("Form", u"Train-Test", None))
         self.crossValButton.setText(QCoreApplication.translate("Form", u"Cross Validation", None))
         self.predictButton.setText(QCoreApplication.translate("Form", u"Predict", None))
