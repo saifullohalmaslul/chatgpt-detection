@@ -114,6 +114,8 @@ class Model:
 
     @classmethod
     def _create_vectorizer(cls, input_size:int, vocab_size:int, corpus:Dataset) -> TextVectorization:
+        corpus.apply(preprocessing.remove_punctuation)
+        corpus.apply(preprocessing.lowercase)
         vectorizer = TextVectorization(max_tokens=vocab_size, output_mode="int", output_sequence_length=input_size, standardize=None)
         corpus_texts = tf.data.Dataset.from_tensor_slices(corpus.get_texts()).batch(128)
         vectorizer.adapt(corpus_texts)
