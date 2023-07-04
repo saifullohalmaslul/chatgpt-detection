@@ -29,7 +29,7 @@ def normalize_quotes(text: str) -> str:
     return text
 
 def remove_punctuation(text: str) -> str:
-    return text.translate(str.maketrans('', '', string.punctuation))
+    return text.translate(str.maketrans("""!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~""", '                                '))
 
 def lowercase(text: str) -> str:
     return text.lower()
