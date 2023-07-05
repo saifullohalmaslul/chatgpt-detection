@@ -72,7 +72,9 @@ class Dataset:
             self.data[i]['text'] = func(self.data[i]['text'])
 
     def filter(self, func):
-        pass
+        for datum in self.data:
+            if func( datum['text'] ):
+                self.data.remove(datum)
 
     def split(self, ratio, shuffle=True):
         data = self.data

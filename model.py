@@ -82,6 +82,8 @@ class Model:
         return cm, mean_accuracy, mean_precision, mean_recall, mean_fscore
 
     def train(self, dataset:Dataset, batch_size:int, epochs:int, callbacks=None):
+        dataset.filter(preprocessing.contains_chatgpt_error)
+        dataset.apply(preprocessing.clean_chatgpt_output)
         dataset.apply(preprocessing.clean)
         dataset.apply(preprocessing.lowercase)
         dataset = dataset.make_xy(batch_size)
@@ -114,6 +116,8 @@ class Model:
 
     @classmethod
     def _create_vectorizer(cls, input_size:int, vocab_size:int, corpus:Dataset) -> TextVectorization:
+        corpus.filter(preprocessing.contains_chatgpt_error)
+        corpus.apply(preprocessing.clean_chatgpt_output)
         corpus.apply(preprocessing.clean)
         corpus.apply(preprocessing.lowercase)
         vectorizer = TextVectorization(max_tokens=vocab_size, output_mode="int", output_sequence_length=input_size, standardize=None)
