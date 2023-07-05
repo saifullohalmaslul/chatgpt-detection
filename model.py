@@ -82,13 +82,13 @@ class Model:
         return cm, mean_accuracy, mean_precision, mean_recall, mean_fscore
 
     def train(self, dataset:Dataset, batch_size:int, epochs:int, callbacks=None):
-        dataset.apply(preprocessing.remove_punctuation)
+        dataset.apply(preprocessing.clean)
         dataset.apply(preprocessing.lowercase)
         dataset = dataset.make_xy(batch_size)
         self.model.fit(dataset, batch_size=batch_size, epochs=epochs, callbacks=callbacks)
 
     def test(self, dataset:Dataset):
-        dataset.apply(preprocessing.remove_punctuation)
+        dataset.apply(preprocessing.clean)
         dataset.apply(preprocessing.lowercase)
 
         predictions = self.model.predict(dataset.make_xy())
@@ -104,7 +104,7 @@ class Model:
         return cm, accuracy, precision, recall, fscore
 
     def predict(self, text:str):
-        text = preprocessing.remove_punctuation(text)
+        text = preprocessing.clean(text)
         text = preprocessing.lowercase(text)
         probabilities = self.model.predict(
             [text]
@@ -114,7 +114,7 @@ class Model:
 
     @classmethod
     def _create_vectorizer(cls, input_size:int, vocab_size:int, corpus:Dataset) -> TextVectorization:
-        corpus.apply(preprocessing.remove_punctuation)
+        corpus.apply(preprocessing.clean)
         corpus.apply(preprocessing.lowercase)
         vectorizer = TextVectorization(max_tokens=vocab_size, output_mode="int", output_sequence_length=input_size, standardize=None)
         corpus_texts = tf.data.Dataset.from_tensor_slices(corpus.get_texts()).batch(128)

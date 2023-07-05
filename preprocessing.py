@@ -1,35 +1,20 @@
 import re
-import string
 
-double_quotes = [
-    '“',
-    '”',
-    '«',
-    '»',
-    '„',
-    '‟',
-    '❝',
-    '❞',
-    '〝',
-    '〞',
-    '〟',
-    '＂',
-    ]
-
-single_quotes = [
-    '‘',
-    '’',
-]
-
-def normalize_quotes(text: str) -> str:
-    regex = r'(?:% s)' % '|'.join(double_quotes)
-    text = re.sub(regex, '"', text)
-    regex = r'(?:% s)' % '|'.join(single_quotes)
-    text = re.sub(regex, "'", text)
-    return text
-
-def remove_punctuation(text: str) -> str:
-    return text.translate(str.maketrans("""!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~""", '                                '))
+def clean(string:str):
+    string = string.replace("\\n", " ")
+    string = re.sub(r"[^A-Za-z0-9(),!?\'\`]", " ", string)
+    string = string.replace("\'s", " \'s")
+    string = string.replace("\'ve", " \'ve")
+    string = string.replace("n\'t", " n\'t")
+    string = string.replace("\'re", " \'re")
+    string = string.replace("\'d", " \'d")
+    string = string.replace("\'ll", " \'ll")
+    string = string.replace(",", " , ")
+    string = string.replace("!", " ! ")
+    string = string.replace("(", " ( ")
+    string = string.replace(")", " ) ")
+    string = string.replace("?", " ? ")
+    return string
 
 def lowercase(text: str) -> str:
     return text.lower()
