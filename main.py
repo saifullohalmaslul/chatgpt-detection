@@ -10,10 +10,8 @@ from dataset import Dataset, DatasetSelection
 class CompilingThread(QThread):
     finished = Signal(Model)
 
-    def __init__(self, input_size:int, vocab_size:int, corpus:Dataset, embeddings_path:str, filters:int, kernel_sizes:list, dropout:float):
+    def __init__(self, corpus:Dataset, embeddings_path:str, filters:int, kernel_sizes:list, dropout:float):
         super(CompilingThread, self).__init__()
-        self.input_size = input_size
-        self.vocab_size = vocab_size
         self.corpus = corpus
         self.embeddings_path = embeddings_path
         self.filters = filters
@@ -462,8 +460,6 @@ class ModelConfigWindow(QDialog):
 
     def start_compile(self):
         self.loading_thread = CompilingThread(
-            input_size = self.ui.inputSizeSpinBox.value(),
-            vocab_size = self.ui.vocabSizeSpinBox.value(),
             corpus = self.corpus,
             embeddings_path = self.embeddings_path,
             filters = self.ui.filtersSpinBox.value(),
@@ -477,8 +473,6 @@ class ModelConfigWindow(QDialog):
     
     def disable_inputs(self):
         self.ui.loadModelButton.setDisabled(True)
-        self.ui.inputSizeSpinBox.setDisabled(True)
-        self.ui.vocabSizeSpinBox.setDisabled(True)
         self.ui.corpusTextView.setDisabled(True)
         self.ui.corpusSelectButton.setDisabled(True)
         self.ui.embeddingsTextView.setDisabled(True)
@@ -490,8 +484,6 @@ class ModelConfigWindow(QDialog):
     
     def enable_inputs(self):
         self.ui.loadModelButton.setEnabled(True)
-        self.ui.inputSizeSpinBox.setEnabled(True)
-        self.ui.vocabSizeSpinBox.setEnabled(True)
         self.ui.corpusTextView.setEnabled(True)
         self.ui.corpusSelectButton.setEnabled(True)
         self.ui.embeddingsTextView.setEnabled(True)
