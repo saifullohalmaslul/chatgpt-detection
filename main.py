@@ -24,8 +24,6 @@ class CompilingThread(QThread):
         model = None
         try:
             model = Model.create_from_params(
-                self.input_size,
-                self.vocab_size,
                 self.corpus,
                 self.embeddings_path,
                 self.filters,

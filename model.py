@@ -17,8 +17,8 @@ class Model:
         self.name = name
     
     @classmethod
-    def create_from_params(cls, input_size:int, vocab_size:int, corpus:Dataset, embeddings_path:str, filters:int, kernel_sizes:list, dropout:float, name:str=""):
-        vectorizer = cls._create_vectorizer(input_size, vocab_size, corpus)
+    def create_from_params(cls, corpus:Dataset, embeddings_path:str, filters:int, kernel_sizes:list, dropout:float, name:str=""):
+        vectorizer = cls._create_vectorizer(corpus)
         embedding = cls._create_embedding(embeddings_path, vectorizer.get_vocabulary())
         
         string_sequences_input = keras.Input(shape=(1,), dtype=tf.string)
@@ -63,6 +63,7 @@ class Model:
         recalls = []
         fscores = []
         for i, (test_data, train_data) in enumerate(dataset.kfold(n_folds)):
+            print(f'Fold {i}')
             self.train(dataset=train_data, batch_size=batch_size, epochs=epochs, callbacks=callbacks)
             metrics = self.test(test_data)
             cm[0][0] += metrics[0][0][0]
@@ -97,11 +98,15 @@ class Model:
         predictions = np.where(predictions < 0.5, 0 , 1)
         labels = dataset.get_labels()
         cm = confusion_matrix(labels, predictions)
-        print('Confusion matrix:\n', cm)
         accuracy = accuracy_score(labels, predictions)
         precision = precision_score(labels, predictions, average='weighted', zero_division=0)
         recall = recall_score(labels, predictions, average='weighted', zero_division=0)
         fscore = f1_score(labels, predictions, average='weighted', zero_division=0)
+        print('Confusion matrix:\n', cm)
+        print(f'Accuracy: {accuracy*100:.2f}%')
+        print(f'Precision: {precision*100:.2f}%')
+        print(f'Recall: {recall*100:.2f}%')
+        print(f'F1-score: {fscore*100:.2f}%')
 
         return cm, accuracy, precision, recall, fscore
 
@@ -115,12 +120,12 @@ class Model:
         return probabilities
 
     @classmethod
-    def _create_vectorizer(cls, input_size:int, vocab_size:int, corpus:Dataset) -> TextVectorization:
+    def _create_vectorizer(cls, corpus:Dataset) -> TextVectorization:
         corpus.filter(preprocessing.contains_chatgpt_error)
         corpus.apply(preprocessing.clean_chatgpt_output)
         corpus.apply(preprocessing.clean)
         corpus.apply(preprocessing.lowercase)
-        vectorizer = TextVectorization(max_tokens=vocab_size, output_mode="int", output_sequence_length=input_size, standardize=None)
+        vectorizer = TextVectorization(max_tokens=None, output_mode="int", output_sequence_length=200, standardize=None)
         corpus_texts = tf.data.Dataset.from_tensor_slices(corpus.get_texts()).batch(128)
         vectorizer.adapt(corpus_texts)
 
