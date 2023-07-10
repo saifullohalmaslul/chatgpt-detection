@@ -24,7 +24,7 @@ class Ui_Form(object):
     def setupUi(self, Form):
         if not Form.objectName():
             Form.setObjectName(u"Form")
-        Form.resize(301, 451)
+        Form.resize(301, 390)
         self.verticalLayout_2 = QVBoxLayout(Form)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.horizontalLayout_8 = QHBoxLayout()
@@ -55,31 +55,12 @@ class Ui_Form(object):
         self.label_4 = QLabel(self.groupBox)
         self.label_4.setObjectName(u"label_4")
 
-        self.gridLayout.addWidget(self.label_4, 5, 0, 1, 1)
+        self.gridLayout.addWidget(self.label_4, 2, 0, 1, 1)
 
         self.label_2 = QLabel(self.groupBox)
         self.label_2.setObjectName(u"label_2")
 
-        self.gridLayout.addWidget(self.label_2, 3, 0, 1, 1)
-
-        self.vocabSizeSpinBox = QSpinBox(self.groupBox)
-        self.vocabSizeSpinBox.setObjectName(u"vocabSizeSpinBox")
-        self.vocabSizeSpinBox.setMinimum(3)
-        self.vocabSizeSpinBox.setMaximum(999999)
-
-        self.gridLayout.addWidget(self.vocabSizeSpinBox, 1, 1, 1, 1)
-
-        self.label = QLabel(self.groupBox)
-        self.label.setObjectName(u"label")
-
-        self.gridLayout.addWidget(self.label, 0, 0, 1, 1)
-
-        self.inputSizeSpinBox = QSpinBox(self.groupBox)
-        self.inputSizeSpinBox.setObjectName(u"inputSizeSpinBox")
-        self.inputSizeSpinBox.setMinimum(1)
-        self.inputSizeSpinBox.setMaximum(9999)
-
-        self.gridLayout.addWidget(self.inputSizeSpinBox, 0, 1, 1, 1)
+        self.gridLayout.addWidget(self.label_2, 0, 0, 1, 1)
 
         self.verticalLayout = QVBoxLayout()
         self.verticalLayout.setObjectName(u"verticalLayout")
@@ -97,53 +78,41 @@ class Ui_Form(object):
         self.verticalLayout.addWidget(self.corpusSelectButton)
 
 
-        self.gridLayout.addLayout(self.verticalLayout, 3, 1, 1, 1)
-
-        self.label_3 = QLabel(self.groupBox)
-        self.label_3.setObjectName(u"label_3")
-
-        self.gridLayout.addWidget(self.label_3, 1, 0, 1, 1)
-
-        self.label_6 = QLabel(self.groupBox)
-        self.label_6.setObjectName(u"label_6")
-
-        self.gridLayout.addWidget(self.label_6, 8, 0, 1, 1)
-
-        self.label_7 = QLabel(self.groupBox)
-        self.label_7.setObjectName(u"label_7")
-
-        self.gridLayout.addWidget(self.label_7, 9, 0, 1, 1)
-
-        self.line = QFrame(self.groupBox)
-        self.line.setObjectName(u"line")
-        self.line.setFrameShape(QFrame.HLine)
-        self.line.setFrameShadow(QFrame.Sunken)
-
-        self.gridLayout.addWidget(self.line, 2, 0, 1, 2)
+        self.gridLayout.addLayout(self.verticalLayout, 0, 1, 1, 1)
 
         self.label_5 = QLabel(self.groupBox)
         self.label_5.setObjectName(u"label_5")
 
-        self.gridLayout.addWidget(self.label_5, 7, 0, 1, 1)
+        self.gridLayout.addWidget(self.label_5, 4, 0, 1, 1)
+
+        self.label_7 = QLabel(self.groupBox)
+        self.label_7.setObjectName(u"label_7")
+
+        self.gridLayout.addWidget(self.label_7, 6, 0, 1, 1)
+
+        self.label_6 = QLabel(self.groupBox)
+        self.label_6.setObjectName(u"label_6")
+
+        self.gridLayout.addWidget(self.label_6, 5, 0, 1, 1)
 
         self.filtersSpinBox = QSpinBox(self.groupBox)
         self.filtersSpinBox.setObjectName(u"filtersSpinBox")
         self.filtersSpinBox.setMinimum(1)
         self.filtersSpinBox.setMaximum(999)
 
-        self.gridLayout.addWidget(self.filtersSpinBox, 7, 1, 1, 1)
+        self.gridLayout.addWidget(self.filtersSpinBox, 4, 1, 1, 1)
 
         self.kernelSizeTextInput = QTextEdit(self.groupBox)
         self.kernelSizeTextInput.setObjectName(u"kernelSizeTextInput")
 
-        self.gridLayout.addWidget(self.kernelSizeTextInput, 8, 1, 1, 1)
+        self.gridLayout.addWidget(self.kernelSizeTextInput, 5, 1, 1, 1)
 
         self.dropoutSpinBox = QDoubleSpinBox(self.groupBox)
         self.dropoutSpinBox.setObjectName(u"dropoutSpinBox")
         self.dropoutSpinBox.setMaximum(1.000000000000000)
         self.dropoutSpinBox.setSingleStep(0.100000000000000)
 
-        self.gridLayout.addWidget(self.dropoutSpinBox, 9, 1, 1, 1)
+        self.gridLayout.addWidget(self.dropoutSpinBox, 6, 1, 1, 1)
 
         self.verticalLayout_3 = QVBoxLayout()
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
@@ -161,21 +130,21 @@ class Ui_Form(object):
         self.verticalLayout_3.addWidget(self.embeddingsSelectButton)
 
 
-        self.gridLayout.addLayout(self.verticalLayout_3, 5, 1, 1, 1)
+        self.gridLayout.addLayout(self.verticalLayout_3, 2, 1, 1, 1)
 
         self.line_2 = QFrame(self.groupBox)
         self.line_2.setObjectName(u"line_2")
         self.line_2.setFrameShape(QFrame.HLine)
         self.line_2.setFrameShadow(QFrame.Sunken)
 
-        self.gridLayout.addWidget(self.line_2, 4, 0, 1, 2)
+        self.gridLayout.addWidget(self.line_2, 1, 0, 1, 2)
 
         self.line_3 = QFrame(self.groupBox)
         self.line_3.setObjectName(u"line_3")
         self.line_3.setFrameShape(QFrame.HLine)
         self.line_3.setFrameShadow(QFrame.Sunken)
 
-        self.gridLayout.addWidget(self.line_3, 6, 0, 1, 2)
+        self.gridLayout.addWidget(self.line_3, 3, 0, 1, 2)
 
 
         self.verticalLayout_4.addLayout(self.gridLayout)
@@ -193,9 +162,7 @@ class Ui_Form(object):
 
         self.verticalLayout_2.addLayout(self.horizontalLayout_9)
 
-        QWidget.setTabOrder(self.loadModelButton, self.inputSizeSpinBox)
-        QWidget.setTabOrder(self.inputSizeSpinBox, self.vocabSizeSpinBox)
-        QWidget.setTabOrder(self.vocabSizeSpinBox, self.corpusTextView)
+        QWidget.setTabOrder(self.loadModelButton, self.corpusTextView)
         QWidget.setTabOrder(self.corpusTextView, self.corpusSelectButton)
         QWidget.setTabOrder(self.corpusSelectButton, self.embeddingsTextView)
         QWidget.setTabOrder(self.embeddingsTextView, self.embeddingsSelectButton)
@@ -215,12 +182,10 @@ class Ui_Form(object):
         self.groupBox.setTitle(QCoreApplication.translate("Form", u"Hyperparameters", None))
         self.label_4.setText(QCoreApplication.translate("Form", u"embeddings", None))
         self.label_2.setText(QCoreApplication.translate("Form", u"corpus", None))
-        self.label.setText(QCoreApplication.translate("Form", u"input_size", None))
         self.corpusSelectButton.setText(QCoreApplication.translate("Form", u"Select Dataset..", None))
-        self.label_3.setText(QCoreApplication.translate("Form", u"vocab_size", None))
-        self.label_6.setText(QCoreApplication.translate("Form", u"kernel_sizes", None))
-        self.label_7.setText(QCoreApplication.translate("Form", u"dropout", None))
         self.label_5.setText(QCoreApplication.translate("Form", u"filters", None))
+        self.label_7.setText(QCoreApplication.translate("Form", u"dropout", None))
+        self.label_6.setText(QCoreApplication.translate("Form", u"kernel_sizes", None))
         self.kernelSizeTextInput.setHtml(QCoreApplication.translate("Form", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
