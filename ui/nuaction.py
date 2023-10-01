@@ -88,11 +88,6 @@ class Ui_Form(object):
 
         self.verticalLayout.addWidget(self.trainTestButton)
 
-        self.crossValButton = QPushButton(Form)
-        self.crossValButton.setObjectName(u"crossValButton")
-
-        self.verticalLayout.addWidget(self.crossValButton)
-
         self.predictButton = QPushButton(Form)
         self.predictButton.setObjectName(u"predictButton")
 
@@ -115,7 +110,6 @@ class Ui_Form(object):
         self.saveButton.setText(QCoreApplication.translate("Form", u"Save Model..", None))
         self.backButton.setText(QCoreApplication.translate("Form", u"Back to Model Config", None))
         self.trainTestButton.setText(QCoreApplication.translate("Form", u"Train-Test", None))
-        self.crossValButton.setText(QCoreApplication.translate("Form", u"Cross Validation", None))
         self.predictButton.setText(QCoreApplication.translate("Form", u"Predict", None))
     # retranslateUi
 

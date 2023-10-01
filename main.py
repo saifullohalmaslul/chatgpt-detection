@@ -1,11 +1,11 @@
 import sys
 import numpy as np
-from PySide6.QtWidgets import QApplication, QDialog, QFileDialog, QWidget, QTableWidgetItem
+from PySide6.QtWidgets import QApplication, QDialog, QFileDialog, QTableWidgetItem
 from PySide6.QtCore import QThread, Signal, QTimer
-from ui import numain, nuaction, nuselect, nuresult, nutt, nucv, nupd
+from ui import numain, nuaction, nuresult, nutt, nupd
 
 from model import Model
-from dataset import Dataset, DatasetSelection
+from dataset import Dataset
 
 class CompilingThread(QThread):
     finished = Signal(Model)
@@ -64,23 +64,6 @@ class TrainTestThread(QThread):
         finally:
             self.finished.emit(metrics)
 
-class CrossValidationThread(QThread):
-    finished = Signal(tuple)
-
-    def __init__(self, model:Model, dataset:Dataset, batch_size:int, epochs:int):
-        super(CrossValidationThread, self).__init__()
-        self.model = model
-        self.dataset = dataset
-        self.batch_size = batch_size
-        self.epochs = epochs
-
-    def run(self):
-        metrics = None
-        try:
-            metrics = self.model.kfold(self.dataset, self.batch_size, self.epochs)
-        finally:
-            self.finished.emit(metrics)
-
 class SaveModelThread(QThread):
     def __init__(self, path:str, model:Model):
         super(SaveModelThread, self).__init__()
@@ -90,74 +73,6 @@ class SaveModelThread(QThread):
     def run(self):
         self.model.save(self.path)
         self.model.name = self.path.split('/')[-1]
-
-class DatasetSelectionWindow(QWidget):
-    select = Signal(Dataset)
-
-    def __init__(self, caller, slot):
-        super(DatasetSelectionWindow, self).__init__()
-        self.ui = nuselect.Ui_Form()
-        self.ui.setupUi(self)
-
-        self.caller = caller
-
-        columnHeader = ["Name", "Count"]
-        self.ui.tableWidget.setColumnCount(len(columnHeader))
-        self.ui.tableWidget.setHorizontalHeaderLabels(columnHeader)
-
-        self.ui.loadDatasetButton.clicked.connect(self.add_dataset)
-        self.ui.selectDatasetButton.clicked.connect(self.select_dataset)
-        self.ui.saveDatasetButton.clicked.connect(self.save_dataset)
-        self.ui.splitButton.clicked.connect(self.split_dataset)
-        self.select.connect(slot)
-
-        if len(dataset_selections.datasets) > 0:
-            self.refresh_table()
-    
-    @classmethod
-    def get_dataset(cls, caller, slot):
-        caller.dataset_selection_window = cls(caller, slot)
-        caller.dataset_selection_window.show()
-    
-    def select_dataset(self):
-        dataset = dataset_selections.get(self.ui.tableWidget.currentRow())
-        self.caller.dataset_selection_window.close()
-        del self.caller.dataset_selection_window
-        self.select.emit(dataset)
-    
-    def save_dataset(self):
-        dataset = dataset_selections.get(self.ui.tableWidget.currentRow())
-        path, _ = QFileDialog.getSaveFileName(self, "Save Dataset As", dataset.name, "JSON files (*.json *.jsonl)")
-        
-        if path:
-            name = path.split('/')[-1]
-            dataset.save(path)
-            dataset.name = name
-            self.refresh_table()
-
-    def add_dataset(self):
-        dataset_path, _ = QFileDialog.getOpenFileName(self, "Select Dataset File", "", "JSON files (*.json *.jsonl)")
-        dataset_selections.add(dataset_path)
-        self.refresh_table()
-    
-    def split_dataset(self):
-        index = self.ui.tableWidget.currentRow()
-        ratio = self.ui.ratioSpinBox.value()
-        dataset_selections.split(index, ratio)
-        self.refresh_table()
-    
-    def refresh_table(self):
-        self.ui.tableWidget.setRowCount(len(dataset_selections.datasets))
-        for i, dataset in enumerate(dataset_selections.datasets):
-            dataset_name = QTableWidgetItem(dataset.name)
-            dataset_count = QTableWidgetItem(str(dataset.total()))
-            self.ui.tableWidget.setItem(i, 0, dataset_name)
-            self.ui.tableWidget.setItem(i, 1, dataset_count)
-        
-        self.ui.selectDatasetButton.setEnabled(True)
-        self.ui.saveDatasetButton.setEnabled(True)
-        self.ui.ratioSpinBox.setEnabled(True)
-        self.ui.splitButton.setEnabled(True)
 
 class ResultWindow(QDialog):
     def __init__(self, model:Model, result:tuple):
@@ -199,8 +114,8 @@ class TrainTestWindow(QDialog):
         self.train_loaded = False
         self.test_loaded = False
 
-        self.ui.trainSelectButton.clicked.connect(lambda: DatasetSelectionWindow.get_dataset(self, self.load_train_data))
-        self.ui.testSelectButton.clicked.connect(lambda: DatasetSelectionWindow.get_dataset(self, self.load_test_data))
+        self.ui.trainSelectButton.clicked.connect(self.load_train_data)
+        self.ui.testSelectButton.clicked.connect(self.load_test_data)
         self.ui.pushButton.clicked.connect(self.start_train_test)
         self.ui.backButton.clicked.connect(self.show_model_summary)
 
@@ -245,8 +160,9 @@ class TrainTestWindow(QDialog):
         self.ui.pushButton.setEnabled(True)
         self.ui.backButton.setEnabled(True)
     
-    def load_train_data(self, dataset:Dataset):
-        self.train_data = dataset
+    def load_train_data(self):
+        dataset_path, _ = QFileDialog.getOpenFileName(self, "Select Dataset File", "", "JSON files (*.json *.jsonl)")
+        self.train_data = Dataset.from_json(dataset_path)
         self.ui.trainDatasetView.setText(f'{self.train_data.name} - {self.train_data.total()}')
         self.ui.trainDatasetView.setEnabled(True)
 
@@ -254,8 +170,9 @@ class TrainTestWindow(QDialog):
         if self.train_loaded and self.test_loaded:
             self.ui.pushButton.setEnabled(True)
     
-    def load_test_data(self, dataset:Dataset):
-        self.test_data = dataset
+    def load_test_data(self):
+        dataset_path, _ = QFileDialog.getOpenFileName(self, "Select Dataset File", "", "JSON files (*.json *.jsonl)")
+        self.test_data = Dataset.from_json(dataset_path)
         self.ui.testDatasetView.setText(f'{self.test_data.name} - {self.test_data.total()}')
         self.ui.testDatasetView.setEnabled(True)
 
@@ -267,65 +184,6 @@ class TrainTestWindow(QDialog):
         self.summary_window = ModelSummaryWindow(self.model)
         self.summary_window.show()
         self.close()
-
-class CrossValidationWindow(QDialog):
-    def __init__(self, model:Model):
-        super(CrossValidationWindow, self).__init__()
-        self.ui = nucv.Ui_Form()
-        self.ui.setupUi(self)
-        self.ui.datasetSelectButton.clicked.connect(lambda: DatasetSelectionWindow.get_dataset(self, self.load_dataset))
-        self.ui.pushButton.clicked.connect(self.start_cross_validation)
-        self.ui.backButton.clicked.connect(self.show_model_summary)
-
-        self.model = model
-    
-    def load_dataset(self, dataset:Dataset):
-        self.dataset = dataset
-        self.ui.datasetView.setText(f'{self.dataset.name} - {self.dataset.total()}')
-        self.ui.datasetView.setEnabled(True)
-
-        self.ui.pushButton.setEnabled(True)
-    
-    def show_model_summary(self):
-        self.summary_window = ModelSummaryWindow(self.model)
-        self.summary_window.show()
-        self.close()
-    
-    def start_cross_validation(self):
-        self.cross_validation_thread = CrossValidationThread(
-            self.model,
-            self.dataset,
-            self.ui.batchSpinBox.value(),
-            self.ui.epochsSpinBox.value()
-        )
-
-        self.cross_validation_thread.finished.connect(self.show_result)
-        self.cross_validation_thread.start()
-        self.disable_inputs()
-    
-    def show_result(self, result:tuple):
-        if result is None:
-            self.enable_inputs()
-        else:
-            self.result_window = ResultWindow(self.model, result)
-            self.result_window.show()
-            self.close()
-    
-    def disable_inputs(self):
-        self.ui.datasetView.setDisabled(True)
-        self.ui.datasetSelectButton.setDisabled(True)
-        self.ui.batchSpinBox.setDisabled(True)
-        self.ui.epochsSpinBox.setDisabled(True)
-        self.ui.pushButton.setDisabled(True)
-        self.ui.backButton.setDisabled(True)
-    
-    def enable_inputs(self):
-        self.ui.datasetView.setEnabled(True)
-        self.ui.datasetSelectButton.setEnabled(True)
-        self.ui.batchSpinBox.setEnabled(True)
-        self.ui.epochsSpinBox.setEnabled(True)
-        self.ui.pushButton.setEnabled(True)
-        self.ui.backButton.setEnabled(True)
 
 class PredictWindow(QDialog):
     def __init__(self, model:Model):
@@ -366,7 +224,6 @@ class ModelSummaryWindow(QDialog):
         self.ui.saveButton.clicked.connect(self.save_model)
         self.ui.summaryView.setText(self.summary_text)
         self.ui.trainTestButton.clicked.connect(self.show_train_test)
-        self.ui.crossValButton.clicked.connect(self.show_cross_validation)
         self.ui.predictButton.clicked.connect(self.show_predict)
         self.ui.backButton.clicked.connect(self.show_model_config)
     
@@ -386,11 +243,6 @@ class ModelSummaryWindow(QDialog):
     def show_train_test(self):
         self.train_test_window = TrainTestWindow(self.model)
         self.train_test_window.show()
-        self.close()
-    
-    def show_cross_validation(self):
-        self.cross_validation_window = CrossValidationWindow(self.model)
-        self.cross_validation_window.show()
         self.close()
     
     def show_predict(self):
@@ -428,7 +280,7 @@ class ModelConfigWindow(QDialog):
         self.ui = numain.Ui_Form()
         self.ui.setupUi(self)
         self.ui.loadModelButton.clicked.connect(self.load_model)
-        self.ui.corpusSelectButton.clicked.connect(lambda: DatasetSelectionWindow.get_dataset(self, self.load_corpus))
+        self.ui.corpusSelectButton.clicked.connect(self.load_corpus)
         self.ui.embeddingsSelectButton.clicked.connect(self.get_embeddings_path)
         self.ui.compileButton.clicked.connect(self.start_compile)
 
@@ -440,8 +292,9 @@ class ModelConfigWindow(QDialog):
             self.loading_thread.start()
             self.disable_inputs()
 
-    def load_corpus(self, corpus:Dataset):
-        self.corpus = corpus
+    def load_corpus(self):
+        dataset_path, _ = QFileDialog.getOpenFileName(self, "Select Dataset File", "", "JSON files (*.json *.jsonl)")
+        self.corpus = Dataset.from_json(dataset_path)
         self.ui.corpusTextView.setText(f'{self.corpus.name} - {self.corpus.total()}')
         self.ui.corpusTextView.setEnabled(True)
 
@@ -510,5 +363,4 @@ def main():
     sys.exit(app.exec())
 
 if __name__ == '__main__':
-    dataset_selections = DatasetSelection()
     main()
