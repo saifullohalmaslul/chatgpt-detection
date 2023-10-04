@@ -260,7 +260,6 @@ class ModelSummaryWindow(QDialog):
         self.ui.saveButton.setDisabled(True)
         self.ui.summaryView.setDisabled(True)
         self.ui.trainTestButton.setDisabled(True)
-        self.ui.crossValButton.setDisabled(True)
         self.ui.predictButton.setDisabled(True)
         self.ui.backButton.setDisabled(True)
     
@@ -270,7 +269,6 @@ class ModelSummaryWindow(QDialog):
         self.ui.saveButton.setEnabled(True)
         self.ui.summaryView.setEnabled(True)
         self.ui.trainTestButton.setEnabled(True)
-        self.ui.crossValButton.setEnabled(True)
         self.ui.predictButton.setEnabled(True)
         self.ui.backButton.setEnabled(True)
 
